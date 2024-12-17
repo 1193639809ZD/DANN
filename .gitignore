@@ -3,6 +3,13 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# 数据集文件夹
+dataset/MNIST/
+dataset/mnist_m/
+
+# 模型文件
+*.pth
+
 # C extensions
 *.so
 

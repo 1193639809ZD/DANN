@@ -7,10 +7,10 @@ from torchvision import datasets
 
 
 def test(dataset_name, epoch):
-    assert dataset_name in ['MNIST', 'mnist_m']
+    assert dataset_name in ["MNIST", "mnist_m"]
 
-    model_root = os.path.join('..', 'models')
-    image_root = os.path.join('..', 'dataset', dataset_name)
+    model_root = os.path.join("models")
+    image_root = os.path.join("dataset", dataset_name)
 
     cuda = True
     cudnn.benchmark = True
@@ -20,45 +20,44 @@ def test(dataset_name, epoch):
 
     """load data"""
 
-    img_transform_source = transforms.Compose([
-        transforms.Resize(image_size),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=(0.1307,), std=(0.3081,))
-    ])
+    img_transform_source = transforms.Compose(
+        [
+            transforms.Resize(image_size),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=(0.1307,), std=(0.3081,)),
+        ]
+    )
 
-    img_transform_target = transforms.Compose([
-        transforms.Resize(image_size),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5))
-    ])
+    img_transform_target = transforms.Compose(
+        [
+            transforms.Resize(image_size),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5)),
+        ]
+    )
 
-    if dataset_name == 'mnist_m':
-        test_list = os.path.join(image_root, 'mnist_m_test_labels.txt')
+    if dataset_name == "mnist_m":
+        test_list = os.path.join(image_root, "mnist_m_test_labels.txt")
 
         dataset = GetLoader(
-            data_root=os.path.join(image_root, 'mnist_m_test'),
+            data_root=os.path.join(image_root, "mnist_m_test"),
             data_list=test_list,
-            transform=img_transform_target
+            transform=img_transform_target,
         )
     else:
         dataset = datasets.MNIST(
-            root='../dataset',
+            root="dataset",
             train=False,
             transform=img_transform_source,
         )
 
     dataloader = torch.utils.data.DataLoader(
-        dataset=dataset,
-        batch_size=batch_size,
-        shuffle=False,
-        num_workers=8
+        dataset=dataset, batch_size=batch_size, shuffle=False, num_workers=8
     )
 
     """ training """
 
-    my_net = torch.load(os.path.join(
-        model_root, 'mnist_mnistm_model_epoch_' + str(epoch) + '.pth'
-    ))
+    my_net = torch.load(os.path.join(model_root, "mnist_mnistm_model_epoch_" + str(epoch) + ".pth"))
     my_net = my_net.eval()
 
     if cuda:
@@ -74,7 +73,7 @@ def test(dataset_name, epoch):
     while i < len_dataloader:
 
         # test model using target data
-        data_target = data_target_iter.next()
+        data_target = next(data_target_iter)
         t_img, t_label = data_target
 
         batch_size = len(t_label)
@@ -100,4 +99,4 @@ def test(dataset_name, epoch):
 
     accu = n_correct.data.numpy() * 1.0 / n_total
 
-    print 'epoch: %d, accuracy of the %s dataset: %f' % (epoch, dataset_name, accu)
+    print("epoch: %d, accuracy of the %s dataset: %f" % (epoch, dataset_name, accu))
